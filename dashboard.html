@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeFlow - Donor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e53935;
+            --primary-dark: #c62828;
+            --secondary: #f5f5f5;
+            --text-dark: #333;
+            --text-light: #fff;
+            --success: #43a047;
+            --warning: #fb8c00;
+            --danger: #d32f2f;
+            --info: #2196f3;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            padding: 1rem;
+            transition: all var(--transition-speed);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .sidebar-header .logo svg {
+            margin-right: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all var(--transition-speed);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1rem;
+            transition: all var(--transition-speed);
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .user-details h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-details p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            background-color: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .bg-primary {
+            background-color: rgba(229, 57, 53, 0.1);
+            color: var(--primary);
+        }
+
+        .bg-success {
+            background-color: rgba(67, 160, 71, 0.1);
+            color: var(--success);
+        }
+
+        .bg-warning {
+            background-color: rgba(251, 140, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .bg-info {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--info);
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Recent Activity */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Upcoming Appointments */
+        .appointment-list {
+            list-style: none;
+        }
+
+        .appointment-item {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-date {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .appointment-status {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-confirmed {
+            background-color: rgba(67, 160, 71, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(251, 140, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .appointment-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Blood Inventory */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .blood-type-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--secondary);
+        }
+
+        .blood-type {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .blood-level {
+            height: 4px;
+            background-color: #ddd;
+            border-radius: 2px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .blood-fill {
+            height: 100%;
+            transition: width 1s ease-in-out;
+        }
+
+        .level-critical {
+            background-color: var(--danger);
+        }
+
+        .level-low {
+            background-color: var(--warning);
+        }
+
+        .level-good {
+            background-color: var(--success);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v8"></path>
+                    <path d="M19.071 4.929A10 10 0 1 0 4.929 19.071 10 10 0 0 0 19.071 4.929"></path>
+                </svg>
+                LifeFlow
+            </div>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        Donation History
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-heartbeat"></i>
+                        Blood Inventory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">JD</div>
+                <div class="user-details">
+                    <h3>John Doe</h3>
+                    <p>Blood Donor</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Schedule Donation
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Stats Cards -->
+            <div class="dashboard-card stat-card">
+                <div class="card-header">
+                    <h3 class="card-title">Total Donations</h3>
+                    <div class="card-icon bg-primary">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Lifetime Donations</div>
+            </div>
+
+            <div class="dashboard-card stat-card">
+                <div class="card-header">
+                    <h3 class="card-title">Next Donation</h3>
+                    <div class="card-icon bg-success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="stat-value">15</div>
+                <div class="stat-label">Days Remaining</div>
+            </div>
+
+            <div class="dashboard-card stat-card">
+                <div class="card-header">
+                    <h3 class="card-title">Lives Impacted</h3>
+                    <div class="card-icon bg-info">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                <div class="stat-value">36</div>
+                <div class="stat-label">Lives Saved</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Upcoming Appointments -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Upcoming Appointments</h3>
+                    <div class="card-icon bg-warning">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <ul class="appointment-list">
+                    <li class="appointment-item">
+                        <div class="appointment-header">
+                            <span class="appointment-date">May 15, 2024</span>
+                            <span class="appointment-status status-confirmed">Confirmed</span>
+                        </div>
+                        <div class="appointment-details">
+                            <p>Central Blood Bank</p>
+                            <p>10:00 AM - 11:00 AM</p>
+                        </div>
+                    </li>
+                    <li class="appointment-item">
+                        <div class="appointment-header">
+                            <span class="appointment-date">June 1, 2024</span>
+                            <span class="appointment-status status-pending">Pending</span>
+                        </div>
+                        <div class="appointment-details">
+                            <p>City Hospital</p>
+                            <p>2:00 PM - 3:00 PM</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                    <div class="card-icon bg-info">
+                        <i class="fas fa-history"></i>
+                    </div>
+                </div>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon bg-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Donation Completed</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon bg-primary">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Appointment Scheduled</div>
+                            <div class="activity-time">5 days ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon bg-info">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Profile Updated</div>
+                            <div class="activity-time">1 week ago</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Blood Inventory -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Blood Inventory Status</h3>
+                    <div class="card-icon bg-danger">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                </div>
+                <div class="inventory-grid">
+                    <div class="blood-type-card">
+                        <div class="blood-type">A+</div>
+                        <div class="blood-level">
+                            <div class="blood-fill level-good" style="width: 75%"></div>
+                        </div>
+                        <div class="stat-label">Good</div>
+                    </div>
+                    <div class="blood-type-card">
+                        <div class="blood-type">B+</div>
+                        <div class="blood-level">
+                            <div class="blood-fill level-low" style="width: 45%"></div>
+                        </div>
+                        <div class="stat-label">Low</div>
+                    </div>
+                    <div class="blood-type-card">
+                        <div class="blood-type">O+</div>
+                        <div class="blood-level">
+                            <div class="blood-fill level-critical" style="width: 25%"></div>
+                        </div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="blood-type-card">
+                        <div class="blood-type">AB+</div>
+                        <div class="blood-level">
+                            <div class="blood-fill level-good" style="width: 60%"></div>
+                        </div>
+                        <div class="stat-label">Good</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+
+            // Active navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Animate blood levels
+            const bloodFills = document.querySelectorAll('.blood-fill');
+            bloodFills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html> 
